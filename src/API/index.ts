@@ -1,8 +1,8 @@
 import axios from "axios";
 import { AuthInfo, InvitationInfo, MessageInfo } from "types/type";
 
-// const GATEWAY_URL = `https://chatting-backend-c0nt.onrender.com/api`;
-const GATEWAY_URL = process.env.GATEWAY_URL;
+const GATEWAY_URL = `https://chatting-backend-c0nt.onrender.com/api`;
+// const GATEWAY_URL = process.env.GATEWAY_URL;
 
 export const login = async (loginInfo: AuthInfo) =>
   await axios({
