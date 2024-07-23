@@ -118,8 +118,16 @@ const ChatPage: React.FC = () => {
   }, [currentChatTarget]);
 
   useEffect(() => {
-    // const newSocket = io("http://localhost:8000");process.env.SOCKET_URL||
-    const newSocket = io("https://chatting-backend-c0nt.onrender.com");
+    const newSocket = io(process.env.GATEWAY_URL || "", {
+      reconnectionDelay: 1000,
+      reconnection: true,
+      reconnectionAttempts: 10,
+      transports: ["websocket"],
+      agent: false,
+      upgrade: false,
+      rejectUnauthorized: false,
+    });
+    // const newSocket = io("https://chatting-backend-c0nt.onrender.com");
     setSocket(newSocket);
     if (userId) {
       newSocket.on("connect", () => {
