@@ -119,7 +119,7 @@ const ChatPage: React.FC = () => {
 
   useEffect(() => {
     // const newSocket = io("http://localhost:8000");process.env.SOCKET_URL||
-    const newSocket = io(process.env.SOCKET_URL || "");
+    const newSocket = io("https://chatting-backend-c0nt.onrender.com");
     setSocket(newSocket);
     if (userId) {
       newSocket.on("connect", () => {

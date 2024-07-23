@@ -1,7 +1,7 @@
 import axios from "axios";
 import { AuthInfo, InvitationInfo, MessageInfo } from "types/type";
 
-const GATEWAY_URL = `${process.env.BASE_URL}/api`;
+const GATEWAY_URL = `https://chatting-backend-c0nt.onrender.com/api`;
 // const GATEWAY_URL = "http://localhost:8080/api";
 
 export const login = async (loginInfo: AuthInfo) =>
