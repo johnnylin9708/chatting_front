@@ -1,7 +1,8 @@
 import axios from "axios";
 import { AuthInfo, InvitationInfo, MessageInfo } from "types/type";
 
-const GATEWAY_URL = "http://localhost:8080/api";
+const GATEWAY_URL = process.env.BASE_URL;
+// const GATEWAY_URL = "http://localhost:8080/api";
 
 export const login = async (loginInfo: AuthInfo) =>
   await axios({
