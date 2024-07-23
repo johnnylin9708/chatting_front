@@ -118,14 +118,14 @@ const ChatPage: React.FC = () => {
   }, [currentChatTarget]);
 
   useEffect(() => {
-    const newSocket = io("https://chatting-backend-c0nt.onrender.com", {
-      reconnectionDelay: 1000,
-      reconnection: true,
-      reconnectionAttempts: 10,
-      transports: ["websocket"],
-      agent: false,
-      upgrade: false,
-      rejectUnauthorized: false,
+    const newSocket = io("https://chatting-backend-c0nt.onrender.com:8000", {
+      // reconnectionDelay: 1000,
+      // reconnection: true,
+      // reconnectionAttempts: 10,
+      // transports: ["websocket"],
+      // agent: false,
+      // upgrade: false,
+      // rejectUnauthorized: false,
     });
     // const newSocket = io("https://chatting-backend-c0nt.onrender.com");
     setSocket(newSocket);
