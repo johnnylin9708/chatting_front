@@ -118,7 +118,7 @@ const ChatPage: React.FC = () => {
   }, [currentChatTarget]);
 
   useEffect(() => {
-    const newSocket = io("https://chatting-backend-c0nt.onrender.com", {
+    const newSocket = io("https://chatting-backend-c0nt.onrender.com:8000", {
       reconnectionDelay: 1000,
       reconnection: true,
       reconnectionAttempts: 10,
