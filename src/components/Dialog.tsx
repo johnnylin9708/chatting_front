@@ -1,8 +1,9 @@
 import { connect } from "API";
 import React, { useRef, useState } from "react";
 import { IoIosAdd } from "react-icons/io";
+import { Socket } from "socket.io-client";
 
-const Dialog = () => {
+const Dialog = (socket: any) => {
   const [errorMsg, setErrorMsg] = useState("");
   const dialogRef = useRef<HTMLDialogElement>(null);
   const handleOpenDialog = () => {
@@ -30,6 +31,7 @@ const Dialog = () => {
       setErrorMsg(connectRes.apiMsg);
     } else {
       handleCloseDialog();
+      socket.emit("connections", connectRes.data);
     }
   };
 

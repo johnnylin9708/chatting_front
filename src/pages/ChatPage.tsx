@@ -82,16 +82,13 @@ const ChatPage: React.FC = () => {
         timestamp: Date.now(),
       };
 
-      const res = await insertMessage(newChatMessageInfo);
-      console.log(res);
+      await insertMessage(newChatMessageInfo);
 
       setMessages([...messages, newChatMessageInfo]);
       setNewMessage("");
       socket.emit("chatMessage", newChatMessageInfo);
     }
   };
-
-  const handleClick = () => {};
 
   useEffect(() => {
     if (!localStorage.getItem("_u")) {
@@ -118,7 +115,7 @@ const ChatPage: React.FC = () => {
   }, [currentChatTarget]);
 
   useEffect(() => {
-    const newSocket = io("https://chatting-backend-c0nt.onrender.com", {
+    const newSocket = io(process.env.REACT_APP_GATEWAY_URL || "", {
       reconnectionDelay: 1000,
       reconnection: true,
       reconnectionAttempts: 10,
@@ -136,6 +133,12 @@ const ChatPage: React.FC = () => {
       });
       newSocket.on("chatMessage", (msg: ChatMessage) => {
         setMessages((prevMessages) => [...prevMessages, msg]);
+      });
+      newSocket.on(userId, (newConnection: Connection) => {
+        setConnections((prevConnections) => [
+          ...prevConnections,
+          newConnection,
+        ]);
       });
     }
 
@@ -162,7 +165,7 @@ const ChatPage: React.FC = () => {
         <div className="bg-white shadow-md border-r border-gray-200 p-6 w-1/4">
           <div className="flex">
             <h2 className="text-lg font-bold mb-4">Friends</h2>
-            <Dialog />
+            <Dialog socket={socket} />
           </div>
           <ul className="space-y-2">
             {connections.map((connection) => (
