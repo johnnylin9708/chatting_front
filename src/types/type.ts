@@ -1,4 +1,5 @@
 export interface AuthInfo {
+  userName?: string | undefined;
   email: string | undefined;
   password: string | undefined;
 }

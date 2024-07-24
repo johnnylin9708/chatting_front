@@ -1,9 +1,15 @@
 import { connect } from "API";
+import { Connection } from "pages/ChatPage";
 import React, { useRef, useState } from "react";
 import { IoIosAdd } from "react-icons/io";
 import { Socket } from "socket.io-client";
 
-const Dialog = (socket: any) => {
+interface Props {
+  setConnections: any;
+  socket: Socket;
+}
+
+const Dialog = (props: Props) => {
   const [errorMsg, setErrorMsg] = useState("");
   const dialogRef = useRef<HTMLDialogElement>(null);
   const handleOpenDialog = () => {
@@ -26,12 +32,20 @@ const Dialog = (socket: any) => {
     const email: FormDataEntryValue | undefined =
       data.get("email")?.toString() || "";
     const connectRes = await connect({ friendEmail: email, userId });
-
     if (connectRes.httpCode !== 201) {
       setErrorMsg(connectRes.apiMsg);
     } else {
       handleCloseDialog();
-      socket.emit("connections", connectRes.data);
+      props.setConnections((prevConnections: any) => [
+        ...prevConnections,
+        connectRes.data,
+      ]);
+      const emailEle = document.getElementById("email") as HTMLInputElement;
+      if (emailEle) {
+        emailEle.value = "";
+      }
+      setErrorMsg("");
+      props.socket.emit("connections", connectRes.data);
     }
   };
 

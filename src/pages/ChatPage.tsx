@@ -4,19 +4,21 @@ import {
   queryMessagesByConnectionId,
 } from "API";
 import Dialog from "components/Dialog";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { Socket, io } from "socket.io-client";
 
-interface Connection {
+export interface Connection {
   id: string;
   connectionId: string;
   userId: string;
   userEmail: string;
+  userName: string;
   friendId: string;
   friendEmail: string;
+  friendName: string;
 }
 
 interface ChatMessage {
@@ -31,10 +33,13 @@ interface ChatMessage {
 }
 
 const ChatPage: React.FC = () => {
+  const chatWindowRef = useRef<HTMLDivElement>(null);
+
   const [socket, setSocket] = useState<any>();
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("_u");
+  const userName = localStorage.getItem("_un");
 
   const [connections, setConnections] = useState<Connection[]>([]);
   const [currentChatTarget, setCurrentChatTarget] =
@@ -124,11 +129,9 @@ const ChatPage: React.FC = () => {
       upgrade: false,
       rejectUnauthorized: false,
     });
-    // const newSocket = io("https://chatting-backend-c0nt.onrender.com");
     setSocket(newSocket);
     if (userId) {
       newSocket.on("connect", () => {
-        console.log("connected");
         newSocket.emit("join", userId);
       });
       newSocket.on("chatMessage", (msg: ChatMessage) => {
@@ -147,62 +150,91 @@ const ChatPage: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // useEffect(()=>{
+  //   socket.emit("connections",)
+  // },[connections])
+
   return (
     <>
-      <button
-        className="m-5 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-        onClick={() => {
-          localStorage.removeItem("_u");
-          localStorage.removeItem("_t");
-          navigate("/login");
-        }}
-      >
-        Logout
-      </button>
-      <div className="flex h-screen">
-        {/* Connections list */}
-
-        <div className="bg-white shadow-md border-r border-gray-200 p-6 w-1/4">
-          <div className="flex">
+      <div className="flex flex-col sm:flex-row h-screen">
+        {/* <!-- Connections list --> */}
+        <div className="bg-white shadow-md border-r border-gray-200 p-6 w-full sm:w-1/4">
+          <div className="flex items-center hover:bg-gray-100 rounded-md p-2 mb-5">
+            <FaUserCircle className="w-12 h-12 rounded-full mr-4" />
+            <div>
+              <h3 className="text-lg font-medium">{userName}</h3>
+            </div>
+            <div>
+              <button
+                className="m-5 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto"
+                onClick={() => {
+                  localStorage.removeItem("_u");
+                  localStorage.removeItem("_t");
+                  navigate("/login");
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold mb-4">Friends</h2>
-            <Dialog socket={socket} />
+            <Dialog setConnections={setConnections} socket={socket} />
           </div>
           <ul className="space-y-2">
-            {connections.map((connection) => (
-              <li
-                key={connection.id}
-                className="flex items-center hover:bg-gray-100 rounded-md p-2 cursor-pointer"
-                onClick={() => setCurrentChatTarget(connection)}
-              >
-                <FaUserCircle className="w-10 h-10 rounded-full mr-4" />
-                <div>
-                  <h3 className="text-sm font-medium">
-                    {userId === connection.userId
-                      ? connection.friendEmail
-                      : connection.userEmail}
-                  </h3>
-                </div>
-              </li>
-            ))}
+            {connections.length !== 0 &&
+              connections.map((connection) => (
+                <li
+                  key={connection.id}
+                  className="flex items-center hover:bg-gray-100 rounded-md p-2 cursor-pointer"
+                  onClick={() => setCurrentChatTarget(connection)}
+                >
+                  <FaUserCircle className="w-10 h-10 rounded-full mr-4" />
+                  <div>
+                    <h3 className="text-sm font-medium">
+                      {userId === connection.userId
+                        ? connection.friendName || connection.friendEmail
+                        : connection.userName || connection.userEmail}
+                    </h3>
+                  </div>
+                </li>
+              ))}
           </ul>
+          {!connections.length && (
+            <div className="mt-9 text-center">
+              You don't have friends now. Let's add some friends to chat !!!
+            </div>
+          )}
         </div>
 
-        {/* Chat message area */}
+        {/* <!-- Chat message area --> */}
         <div className="flex-1 bg-white shadow-md border-r border-gray-200 p-6">
           {currentChatTarget && (
             <div className="h-full flex flex-col">
-              <div className="flex-1 overflow-y-auto">
+              <div
+                className="flex-1 overflow-y-auto border-gray-200 border-2"
+                ref={chatWindowRef}
+                id="chatWindow"
+              >
                 <div className="space-y-4">
                   {messages.map((message) => {
                     if (message.senderId === userId) {
                       return (
-                        <div key={message.id} className="flex items-start">
+                        <div key={message.id} className="flex items-start m-5">
                           <FaUserCircle className="w-10 h-10 rounded-full mr-4" />
                           <div className="bg-gray-100 rounded-lg p-3 max-w-md">
                             <h3 className="text-sm font-medium mb-1">
                               {currentChatTarget.userId === userId
-                                ? currentChatTarget.userEmail
-                                : currentChatTarget.friendEmail}
+                                ? currentChatTarget.userName ||
+                                  currentChatTarget.userEmail
+                                : currentChatTarget.friendName ||
+                                  currentChatTarget.friendEmail}
                             </h3>
                             <p className="text-gray-700">{message.text}</p>
                           </div>
@@ -212,14 +244,16 @@ const ChatPage: React.FC = () => {
                       return (
                         <div
                           key={message.id}
-                          className="flex justify-end items-start"
+                          className="flex justify-end items-start m-5"
                         >
                           <FaUserCircle className="w-10 h-10 rounded-full mr-4" />
                           <div className="bg-gray-100 rounded-lg p-3 max-w-md">
                             <h3 className="text-sm font-medium mb-1">
                               {currentChatTarget.userId !== userId
-                                ? currentChatTarget.userEmail
-                                : currentChatTarget.friendEmail}
+                                ? currentChatTarget.userName ||
+                                  currentChatTarget.userEmail
+                                : currentChatTarget.friendName ||
+                                  currentChatTarget.friendEmail}
                             </h3>
                             <p className="text-gray-700">{message.text}</p>
                           </div>

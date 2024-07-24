@@ -1,6 +1,7 @@
 import { login, register } from "API";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaQuestionCircle } from "react-icons/fa";
 
 const AuthForm: React.FC = () => {
   const navigate = useNavigate();
@@ -35,9 +36,10 @@ const AuthForm: React.FC = () => {
       setErrorMsg(loginRes.apiMsg);
     } else {
       setErrorMsg("");
-      setMsg("Login Successfully");
+      setMsg("Login successful! Welcome back.");
       localStorage.setItem("_t", loginRes.accessToken);
       localStorage.setItem("_u", loginRes.userId);
+      localStorage.setItem("_un", loginRes.userName);
       navigate("/chat");
     }
   };
@@ -49,8 +51,10 @@ const AuthForm: React.FC = () => {
     const password: FormDataEntryValue | undefined = data
       .get("password")
       ?.toString();
-
-    const registerRes = await register({ email, password });
+    const userName: FormDataEntryValue | undefined = data
+      .get("userName")
+      ?.toString();
+    const registerRes = await register({ email, password, userName });
 
     if (registerRes.httpCode !== 201) {
       setErrorMsg(registerRes.apiMsg);
@@ -64,11 +68,24 @@ const AuthForm: React.FC = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md">
+        <div className="flex mb-4">
+          <FaQuestionCircle className="w-7 h-7 text-gray-500" />
+          {isLogin ? (
+            <span className="mb-2 w-max px-2 py-0">
+              If you don't have an account yet, please swich to the Register
+              form to apply
+            </span>
+          ) : (
+            <span className="mb-2 w-max px-2 py-0">
+              Please enter your user Name, Email, and Password
+            </span>
+          )}
+        </div>
         <div className="mb-4 flex justify-between">
           <button
             className={`px-4 py-2 font-medium ${
               isLogin
-                ? "bg-blue-500 text-white hover:bg-blue-600"
+                ? "bg-orange-500 text-white hover:bg-orange-600"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
             onClick={toggleAuthMode}
@@ -78,7 +95,7 @@ const AuthForm: React.FC = () => {
           <button
             className={`px-4 py-2 font-medium ${
               !isLogin
-                ? "bg-blue-500 text-white hover:bg-blue-600"
+                ? "bg-yellow-500 text-white hover:bg-yellow-600"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
             onClick={toggleAuthMode}
@@ -88,6 +105,24 @@ const AuthForm: React.FC = () => {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div>
+              <label
+                htmlFor="userName"
+                className="block text-gray-700 font-bold mb-2"
+              >
+                User Name
+              </label>
+              <input
+                type="userName"
+                name="userName"
+                id="userName"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Enter your User Name"
+              />
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="email"
@@ -119,8 +154,8 @@ const AuthForm: React.FC = () => {
             />
           </div>
           <div>
-            {errorMsg && <p className="text-red-600">{errorMsg}</p>}
-            {msg && <p className="text-green-600">{msg}</p>}
+            {errorMsg && <p className="text-red-500">{errorMsg}</p>}
+            {msg && <p className="text-blue-300">{msg}</p>}
           </div>
 
           <button

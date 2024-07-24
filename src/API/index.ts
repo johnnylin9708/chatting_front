@@ -2,7 +2,6 @@ import axios from "axios";
 import { AuthInfo, InvitationInfo, MessageInfo } from "types/type";
 
 const GATEWAY_URL = `${process.env.REACT_APP_GATEWAY_URL || ""}/api`;
-// const GATEWAY_URL = process.env.GATEWAY_URL;
 
 export const login = async (loginInfo: AuthInfo) =>
   await axios({
