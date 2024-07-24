@@ -6,10 +6,9 @@ import {
 import Dialog from "components/Dialog";
 import React, { useEffect, useRef, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
-import { IoIosAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { Socket, io } from "socket.io-client";
-
+import { io } from "socket.io-client";
+import { FaArrowCircleRight } from "react-icons/fa";
 export interface Connection {
   id: string;
   connectionId: string;
@@ -156,10 +155,6 @@ const ChatPage: React.FC = () => {
     }
   }, [messages]);
 
-  // useEffect(()=>{
-  //   socket.emit("connections",)
-  // },[connections])
-
   return (
     <>
       <div className="flex flex-col sm:flex-row h-screen">
@@ -216,9 +211,9 @@ const ChatPage: React.FC = () => {
         {/* <!-- Chat message area --> */}
         <div className="flex-1 bg-white shadow-md border-r border-gray-200 p-6">
           {currentChatTarget && (
-            <div className="h-full flex flex-col">
+            <div className="h-dvh flex flex-col">
               <div
-                className="flex-1 overflow-y-auto border-gray-200 border-2"
+                className="flex-1 overflow-y-auto border-gray-200 border-2 pb-4 "
                 ref={chatWindowRef}
                 id="chatWindow"
               >
@@ -263,7 +258,7 @@ const ChatPage: React.FC = () => {
                   })}
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="flex mt-4 border-gray-200 border-2">
                 <input
                   type="text"
                   placeholder="Type your message..."
@@ -271,6 +266,10 @@ const ChatPage: React.FC = () => {
                   value={newMessage}
                   onChange={handleMessageChange}
                   onKeyPress={handleKeyPress}
+                />
+                <FaArrowCircleRight
+                  onClick={sendMessage}
+                  className="m-1 w-9 h-9 cursor-pointer"
                 />
               </div>
             </div>
