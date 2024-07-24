@@ -209,7 +209,7 @@ const ChatPage: React.FC = () => {
         </div>
 
         {/* <!-- Chat message area --> */}
-        <div className="flex-1 bg-white shadow-md border-r border-gray-200 p-6">
+        <div className="flex-1 bg-white shadow-md border-r border-gray-200">
           {currentChatTarget && (
             <div className="h-dvh flex flex-col">
               <div
