@@ -72,12 +72,12 @@ const AuthForm: React.FC = () => {
           <FaQuestionCircle className="w-7 h-7 text-gray-500" />
           {isLogin ? (
             <span className="mb-2 w-max px-2 py-0">
-              If you don't have an account yet, please swich to the Register
-              form to apply
+              First time here? Register on the page to set up your account
             </span>
           ) : (
             <span className="mb-2 w-max px-2 py-0">
-              Please enter your user Name, Email, and Password
+              To create your account, please enter a username, password, and
+              your email address.
             </span>
           )}
         </div>

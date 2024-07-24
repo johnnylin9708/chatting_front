@@ -203,7 +203,7 @@ const ChatPage: React.FC = () => {
           </ul>
           {!connections.length && (
             <div className="mt-9 text-center">
-              You don't have friends now. Let's add some friends to chat !!!
+              Welcome! Add friends by clicking the '+' icon to start chatting
             </div>
           )}
         </div>
